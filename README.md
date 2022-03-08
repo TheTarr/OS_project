@@ -3,6 +3,9 @@
 
 # How to use
  ------- Below are the command you need -------
+ 
  cd to the folder
+ 
  make
+ 
  ./myshell
