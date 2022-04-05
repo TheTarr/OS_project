@@ -47,7 +47,7 @@ int main()
     }
     // clear();
 
-    printf("Please waiting for server...\n");
+    printf("Welcome to the shell! Now please wait for the server...\n");
 
     while (1)
     {
