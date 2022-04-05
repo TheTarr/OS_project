@@ -46,11 +46,15 @@ int main()
         return -1;
     }
     // clear();
+
+    printf("Please waiting for server...\n");
+
     while (1)
     {
         // read the current location from server
         char message0[1024] = {0};
         recv(sock, message0, sizeof(message0), 0);
+
         printf(LIGHT_GREEN "user");
         printf(NONE ":");
         printf(LIGHT_BLUE "%s", message0);
