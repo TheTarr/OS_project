@@ -1,5 +1,5 @@
 all:server client
-server: 0402server.c
-	gcc -o server 0402server.c
-client: 0402client.c
-	gcc -o client 0402client.c
+server: 0417server.c
+	gcc -o server 0417server.c -lpthread
+client: 0417client.c
+	gcc -o client 0417client.c
