@@ -21,7 +21,10 @@ void clientExitHandler(int sig_num)
 {
     send(sock, "exit", strlen("exit"), 0); // sending exit message to server
     close(sock);                           // close the socket/end the conection
-    printf("\n Exiting client.  \n");
+    clear();
+    printf("\n\n\n\n\n\n\n                      ***************************\n\n                         Thank you for using!\n\n                           Jennifer & Leyi\n\n                      ***************************\n\n\n\n");
+    sleep(1);
+    clear();
     fflush(stdout); // force to flush any data in buffers to the file descriptor of standard output,, a pretty convinent function
     exit(0);
 }
@@ -62,8 +65,10 @@ int main()
         printf("\nConnection Failed \n");
         return -1;
     }
-
-    printf("Welcome to the shell! Now please wait for the server...\n");
+    clear();
+    printf("\n\n\n\n\n\n\n                      ***************************\n\n                         Welcome to the Shell!\n\n                           Jennifer & Leyi\n\n                      ***************************\n\n\n\n");
+    sleep(3);
+    clear();
 
     while (1)
     {
@@ -71,6 +76,7 @@ int main()
         char message0[1024] = {0};
         recv(sock, message0, sizeof(message0), 0);
 
+        // message that will send to the server
         char message2[1024] = {0};
         int i = 0;
         while (1)
