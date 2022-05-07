@@ -253,8 +253,8 @@ void *manage_process(void *header){
         }
         // 如果list里有东西
         // printf("first going to posted, id: %d!\n", next_node->client_semaphor);
-        // 如果是系统命令，跑，睡一秒
-        if (next_node->remaining_time == 1){// todo:loop剩下一秒
+        // 如果是系统命令或loop剩下对后一秒，跑，睡一秒
+        if (next_node->remaining_time == 1){
             // printf("current node: %s\n", next_node->message);
             // int sval;
             // sem_getvalue (&client[next_node->the_flag], &sval);
@@ -274,14 +274,20 @@ void *manage_process(void *header){
         }else{
             int finish_flag = 0; // 用来判断循环完了没有，完了是1，没完是0
             // sem_post(&client[next_node->the_flag]);
-            for(int i=next_node->remaining_time; i>next_node->remaining_time-3;i--){ // 循环
-                if(i<0){
+            int i = 0; // 跑了几轮
+            for(int x=next_node->remaining_time; x>next_node->remaining_time-3;x--){ // 循环
+                if(x<0){
                     finish_flag = 1;
                     break;
                 }
                 else{
-                    printf("from client %lu, round: %d\n",next_node->client_id,i);
+                    printf("from client %lu, round: %d\n",next_node->client_id,x);
+                    i += 1;
                     sleep(1);
+                    L *first_node = my_list->next;
+                    if(first_node->client_id != next_node->client_id){ // 如果当前链表的第一个不是本node
+                        break;
+                    }
                 }
             }
             if(finish_flag == 1){ // 如果循环完了，删掉这个node
@@ -289,7 +295,7 @@ void *manage_process(void *header){
                 detele_list_node(my_list, next_node->client_id);
             }
             else{ // 如果没循环完，把这个更新后的命令插到最后去，删除当前命令
-                tail_insert(args -> header, strict_create_node(next_node->client_id, next_node->message, next_node->the_flag, next_node->remaining_time-3));
+                tail_insert(args -> header, strict_create_node(next_node->client_id, next_node->message, next_node->the_flag, next_node->remaining_time-i));
                 detele_list_node(my_list, next_node->client_id);
             }
         }
