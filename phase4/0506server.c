@@ -165,31 +165,6 @@ void Print_node(L *pH)
     }
 }
 
-//查询列表里是否有该id的节点，有回1，没有回0
-int check_node_exsist(L *pH, int id)
-{
-    //获取当前的位置
-    L *p = pH;
-    //获取第一个节点的位置
-    p = p->next;
-    //如果当前位置的下一个节点不为空
-    while (NULL != p->next)
-    {
-        if (p->client_id == id)
-        {
-            return 1;
-        }
-        p = p->next;
-    }
-    //如果当前位置的下一个节点为空，则打印数据
-    //说明只有一个节点
-    if (p->client_id == id)
-    {
-        return 1;
-    }
-    return 0;
-}
-
 //删除链表中的节点，找到的第一个
 int detele_list_node(L *pH, pthread_t id)
 {
@@ -226,98 +201,54 @@ int detele_list_node(L *pH, pthread_t id)
 // …………………………………………………………………………………算法管理员…………………………………………………………………………………………………
 // 该函数是一个永远在后台跑的线程，用来管理当前的所有线程
 void *manage_process(void *header){
-    // while (1){
-    //     Print_node(header);
-    //     putchar('\n');
-    //     sleep(2);
-    // }
     L*my_list = (L*)header;
     Print_node(my_list);
     putchar('\n');
-    printf("hello from manager!\n");
+    printf("Hello from manager!\n");
     while(1){
-        // get the first node
-        // if(my_list->next != NULL){
-        //     L *next_node = my_list->next;
-        // }
-        // else{
-        //     printf("Nothing in the queue now, waiting for commands.\n");
-        //     sleep(1);
-        //     continue;
-        // }
+        // mylist: header -> first_coammand -> second_command
         L *next_node = my_list->next;
-        if(next_node == NULL){
+        if(next_node == NULL){ // there is only header, no command
             printf("Nothing in the queue now, waiting for commands.\n");
             sleep(1);
             continue;
         }
         // 如果list里有东西
-        // printf("first going to posted, id: %d!\n", next_node->client_semaphor);
-        // 如果是系统命令或loop剩下对后一秒，跑，睡一秒
+        // 如果是系统命令，wake client thread，跑
         if (next_node->remaining_time == 1 && next_node->message[2]!='l' && next_node->message[3]!= 'o'&& next_node->message[4]!= 'o'&& next_node->message[5]!= 'p'){
-            // printf("current node: %s\n", next_node->message);
-            // int sval;
-            // sem_getvalue (&client[next_node->the_flag], &sval);
-            // printf("first going to posted, value: %d!\n", sval);
             sem_post(&client[next_node->the_flag]);
-            // sem_getvalue (&client[next_node->the_flag], &sval);
-            // printf("first posted, now value: %d!\n", sval);
-            // sleep(10);
-            Print_node(my_list);
-            printf("current client id: %lu\n", next_node->client_id);
-            detele_list_node(my_list, next_node->client_id);
-            // printf("node deleted!!!!!!\n\n\n\n");
             // Print_node(my_list);
-            // sleep(1);
+            // printf("current client id: %lu\n", next_node->client_id);
+            detele_list_node(my_list, next_node->client_id);
             continue;
         // 如果是循环命令
         }else{
             int finish_flag = 0; // 用来判断循环完了没有，完了是1，没完是0
-            // sem_post(&client[next_node->the_flag]);
-            int i = 0; // 跑了几轮
-            for(int x=next_node->remaining_time; x>next_node->remaining_time-3;x--){ // 循环
-                if(x<1){
+            int i = 0; // 这次跑了几轮
+            for(int x=next_node->remaining_time; x>next_node->remaining_time-3;x--){ // 循环打印x，x递减，3秒一循环
+                if(x<1){ // loop 跑完了
                     finish_flag = 1;
                     break;
                 }
                 else{
                     printf("from client %lu, round: %d\n",next_node->client_id,x);
-                    i += 1;
+                    i += 1; // 这次跑的轮数 +1
                     sleep(1);
                     L *first_node = my_list->next;
                     if(first_node->client_id != next_node->client_id){ // 如果当前链表的第一个不是本node
-                        break;
+                        break; // 停止循环
                     }
                 }
             }
-            if(finish_flag == 1){ // 如果循环完了，删掉这个node
+            if(finish_flag == 1){ // 如果循环完了，wake client thread，删掉这个node
                 sem_post(&client[next_node->the_flag]);
                 detele_list_node(my_list, next_node->client_id);
             }
-            else{ // 如果没循环完，把这个更新后的命令插到最后去，删除当前命令
+            else{ // 如果没循环完，把这个更新后的命令插到最后去，删除当前node
                 tail_insert(args -> header, strict_create_node(next_node->client_id, next_node->message, next_node->the_flag, next_node->remaining_time-i));
                 detele_list_node(my_list, next_node->client_id);
             }
         }
-        // Print_node(my_list);
-        // printf("current node: %s\n", next_node->message);
-        // int sval;
-        // sem_getvalue (&client[next_node->the_flag], &sval);
-        // printf("first going to posted, value: %d!\n", sval);
-        // sem_post(&client[next_node->the_flag]);
-        // sem_getvalue (&client[next_node->the_flag], &sval);
-        // printf("first posted, now value: %d!\n", sval);
-        // sleep(10);
-        
-        // // Print_node(my_list);
-        // next_node = next_node->next;
-
-        // sem_getvalue (&client[next_node->the_flag], &sval);
-        // printf("first going to posted, value: %d!\n", sval);
-        // sem_post(&client[next_node->the_flag]);
-        // sem_getvalue (&client[next_node->the_flag], &sval);
-        // printf("first posted, now value: %d!\n", sval);
-        // sleep(10);
     }
 
 }
@@ -377,13 +308,10 @@ void *HandleClient(void *arguments)
         }else{
             top_insert(args -> header, create_node(pthread_self(), message,flag)); // 如果是系统命令，插到队首
         }
-        // signal插在这里
-        int sval;
-        sem_getvalue (&client[flag], &sval);
-        // printf("now waiting, id: %d\n",args -> client_semaphor);
-        printf("bafore waiting, value: %d\n",sval);
+
+        // signal插在这里，接收完命令交上去就开睡
         sem_wait(&client[flag]);
-        printf("now waking!\n");
+        // printf("now waking!\n");
 
         anal(message, &param_num, param_arr);  // split the commend into a 2D array
         if (strcmp(param_arr[0], "cd") == 0) // cd to the place // TODO
@@ -407,9 +335,11 @@ void *HandleClient(void *arguments)
         printf("return message processed!\n");
 
         if((strcmp("", return_message) == 0)){
+            // 如果是假loop，发假loop完成
             if(message[2]=='l' && message[3]== 'o'&& message[4]== 'o'&& message[5]== 'p'){
                 send(socket,"Looping finished!\n\0",strlen("Looping finished!\n\0"),0);
             }
+            // 如果是gcc之类的确实没返回值，就实话实说
             else{
                 send(socket,"Nothing returned!\n\0",strlen("Nothing returned!\n\0"),0);
             }
@@ -421,9 +351,6 @@ void *HandleClient(void *arguments)
             continue;
         }
 
-        // 结束在这里
-        // sem_post(&args -> client_semaphor);
-        // convert the result to string and sent to client
         send(socket,return_message,strlen(return_message),0); // send message to client
         // recieve ack
         recv(socket, cwd, sizeof(cwd), 0);
@@ -436,9 +363,9 @@ void *HandleClient(void *arguments)
 int main() // main function
 {
     //创建第一个节点
-    L *header = create_node(0, "header", -1); // header就是这个单链表
+    L *header = create_node(0, "header", -1); // header就是这个单链表头
 
-    // 创建一个thread，专门用来管理当前线程
+    // 创建一个manager thread，专门用来管理当前线程
     pthread_t thread_id;
     int rc;
     rc = pthread_create(&thread_id, NULL, manage_process, header);
@@ -494,20 +421,11 @@ int main() // main function
     int rc;                                       // return value from pthread_create to check if new thread is created successfukky                           */
     pthread_t thread_id;                          // thread's ID (just an integer, typedef unsigned long int) to indetify new thread
     sem_init(&client[client_flag],0,0);
-    
-    // int *new_socket = (int *)malloc(sizeof(int)); // for passing safely the integer socket to the thread
-    // if (new_socket == NULL)
-    // {
-    //   fprintf(stderr, "Couldn't allocate memory for thread new socket argument.\n");
-    //   exit(EXIT_FAILURE);
-    // }
-    // *new_socket = sock2;
 
     args = malloc(sizeof(struct client_arg) * 1);
     args->new_socket = sock2;
     args->header = header;
     args->my_flag = client_flag;
-    // args->client_semaphor = client_semaphor;
 
     // create a new thread that will handle the communication with the newly accepted client
     rc = pthread_create(&thread_id, NULL, HandleClient, args);
@@ -516,7 +434,11 @@ int main() // main function
       printf("\n ERROR: return code from pthread_create is %d \n", rc);
       exit(EXIT_FAILURE);
     }
-    client_flag++;
+    if(client_flag <= 8){
+        client_flag ++;
+    }else{
+        client_flag = 0;
+    }
   }
 
   close(sock1);
