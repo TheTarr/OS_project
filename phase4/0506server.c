@@ -254,7 +254,7 @@ void *manage_process(void *header){
         // 如果list里有东西
         // printf("first going to posted, id: %d!\n", next_node->client_semaphor);
         // 如果是系统命令或loop剩下对后一秒，跑，睡一秒
-        if (next_node->remaining_time == 1){
+        if (next_node->remaining_time == 1 && next_node->message[2]!='l' && next_node->message[3]!= 'o'&& next_node->message[4]!= 'o'&& next_node->message[5]!= 'p'){
             // printf("current node: %s\n", next_node->message);
             // int sval;
             // sem_getvalue (&client[next_node->the_flag], &sval);
@@ -276,7 +276,7 @@ void *manage_process(void *header){
             // sem_post(&client[next_node->the_flag]);
             int i = 0; // 跑了几轮
             for(int x=next_node->remaining_time; x>next_node->remaining_time-3;x--){ // 循环
-                if(x<0){
+                if(x<1){
                     finish_flag = 1;
                     break;
                 }
@@ -395,7 +395,7 @@ void *HandleClient(void *arguments)
             // send(socket,cwd,strlen(cwd),0);
             printf("already cd\n");
             recv(socket, cwd, sizeof(cwd), 0);
-            printf("client got the result");
+            printf("client got the result\n");
             continue;
         }
         // clear the global return_message
