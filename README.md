@@ -4,9 +4,9 @@
  
 # Files
 
- Operating system course project, you can find the requirements of my homework (4 phases in total) in the pdf file. 
+ Operating system course project, you can find the requirements (4 phases in total) in the pdf file. 
 
- The files in each folder is the final version we submitted. You can ignore whatever outside (I don't remember what are those so just leave them there).
+ The files in each folder is the final version I submitted. You can ignore whatever outside (I don't remember what are those so just leave them there).
  
  I didn't find a runnable file online when I was doing this homework so I uploded my version. If you're searching for help like me at that time, I hope this finds you well ^_^
 
