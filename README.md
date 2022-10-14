@@ -6,7 +6,7 @@
 
  The files in each folder is the final version we submitted.
  
- I didn't find a runnable file online when I was doing this homework so I uploded my version. I hope it help you well ^_^
+ I didn't find a runnable file online when I was doing this homework so I uploded my version. If you're searching for help like me at that time, I hope this finds you well ^_^
 
 
 # The commands you need to execute each phase
